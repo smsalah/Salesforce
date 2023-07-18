@@ -45,7 +45,9 @@ jobs:
         # Github action that runs on pull request and generate in-line comments.
         uses: mitchspano/sfdx-scan-pull-request@v0.1.14
         # Action optional inputs
-        #with:
+        with:
+          report-mode: comments
+          delete-resolved-comments: true
           #pmdconfig: ruleset.xml
           #severity-threshold: 4
           #strictly-enforced-rules: '[{ "engine": "pmd", "category": "Performance", "rule": "AvoidDebugStatements" }]'
