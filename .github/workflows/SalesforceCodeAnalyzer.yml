@@ -39,7 +39,7 @@ jobs:
         #Install SFDX CLI to install and use sfdx-scanner (code scanner)
       - name: Install SFDX CLI and Scanner
         run: |
-          npm install sfdx-cli -g
+          npm install @salesforce/cli --global
           sfdx plugins:install @salesforce/sfdx-scanner
       - name: Run SFDX Scanner - Report findings as comments
         # Github action that runs on pull request and generate in-line comments.
