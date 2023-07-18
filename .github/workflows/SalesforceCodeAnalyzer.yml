@@ -1,1 +1,55 @@
+####################################################################################################
+#
+# FILENAME:     SaelsforceCodeAnalyzer.yml
+#
+# PURPOSE:      Configuration file for the Github Workflow "Salesforce Code Analyzer".
+#
+# DESCRIPTION:  github actions require requires the presence of a YAML configuration file at the following path:
+#               <repository-root>/.github/workflow/SaelsforceCodeAnalyzer.yml
+#               When changes are committed to a tracked repository, Github workflow will checkout the
+#               appropriate branch and follow the instructions in SaelsforceCodeAnalyzer.yml to run salesforce code analyzer; a unified tool for source code analysis. The workflow mainly does the following
+#               a) Installs sfdx client
+#               b) Installs sfdx-scanner (the code scanner utility) using the sfdx client
+#               c) Uses an action (mitchspano/sfdx-scan-pull-request) to run sfdx-scanner and generate 
+#                  in-line comments with the findings on the changed file(s) on a pull request.
+
+#
+####################################################################################################
+
+name: Salesforce Code Analyzer
+# the event(s) that activate the workflow.pull_request and workflow_dispatch
+on:
+  pull_request:
+    # The types of pull request events
+    types: [opened, reopened, synchronize]
+    # workflow_dispatch event is used to run the workflow manually.
+  workflow_dispatch:
+ # Jobs are tasks run by the workflow
+jobs:
+  # Name of the job
+  SalesforceCodeAnalyzer:
+    # create a virtual machine
+    runs-on: ubuntu-latest
+    steps:
+        # Use a predefined Github action to checkout the branch so that the workflow could acces it.
+      - uses: actions/checkout@v3
+        with:
+          #Fetch all history for all tags and branches
+          fetch-depth: 0
+        #Install SFDX CLI to install and use sfdx-scanner (code scanner)
+      - name: Install SFDX CLI and Scanner
+        run: |
+          npm install sfdx-cli -g
+          sfdx plugins:install @salesforce/sfdx-scanner
+      - name: Run SFDX Scanner - Report findings as comments
+        # Github action that runs on pull request and generate in-line comments.
+        uses: mitchspano/sfdx-scan-pull-request@v0.1.14
+        # Action optional inputs
+        #with:
+          #pmdconfig: ruleset.xml
+          #severity-threshold: 4
+          #strictly-enforced-rules: '[{ "engine": "pmd", "category": "Performance", "rule": "AvoidDebugStatements" }]'
+        env:
+          # Automated generated toen by the workflow to access github from within the virtual machine
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
